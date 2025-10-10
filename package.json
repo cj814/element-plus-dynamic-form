@@ -27,16 +27,16 @@
     "form",
     "component"
   ],
-  "author": "Your Name <your.email@example.com>",
+  "author": "cj814 <527781599@qq.com>",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/element-plus-dynamic-form.git"
+    "url": "https://github.com/cj814/element-plus-dynamic-form.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/element-plus-dynamic-form/issues"
+    "url": "https://github.com/cj814/element-plus-dynamic-form/issues"
   },
-  "homepage": "https://github.com/yourusername/element-plus-dynamic-form#readme",
+  "homepage": "https://github.com/cj814/element-plus-dynamic-form#readme",
   "peerDependencies": {
     "element-plus": "^2.11.2",
     "vue": "^3.2.35"
