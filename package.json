@@ -11,7 +11,6 @@
   ],
   "scripts": {
     "dev": "vite --config vite.config.dev.ts",
-    "dev:example": "cd example && npm run dev",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
