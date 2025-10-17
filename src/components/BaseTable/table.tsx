@@ -69,9 +69,14 @@ export default defineComponent({
     const renderHeaderSlot = (columnItem: Column) => {
       if (isFormTable.value) {
         const isRequired = columnRequiredMap.value.get(columnItem.prop)
-        const requiredClass = 'text-red relative top-[2px] mr-[2px]'
+        const requiredStyle = {
+          color: 'red',
+          position: 'relative',
+          top: '2px',
+          marginRight: '2px'
+        }
         if (isRequired) {
-          return h('span', null, [h('span', { class: requiredClass }, '*'), h('span', null, columnItem.label)])
+          return h('span', null, [h('span', { style: requiredStyle }, '*'), h('span', null, columnItem.label)])
         }
       }
       return columnItem.label
@@ -84,7 +89,7 @@ export default defineComponent({
      * @returns 表体内容
      */
     const renderDefaultSlot = (columnItem: Column, scope: any) => {
-      const columnValue = scope.row[columnItem.prop as string] || ''
+      const columnValue = scope.row[columnItem.prop as string]
       try {
         const updateFunc = (columnItem: Column, value: any) => {
           scope.row[columnItem.prop as string] = value

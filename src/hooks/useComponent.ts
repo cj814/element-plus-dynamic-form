@@ -82,26 +82,11 @@ export function useComponent() {
     const comSlots = configItem.comProps?.slots || {}
     const comSlotsLength = Object.keys(comSlots).length
     const slotTypeList = comSlotsLength ? ['slot'] : ['slot', 'expand']
-    if (slotTypeList.includes(renderType) && comSlotsLength) {
-      const slot1 = {
-        插槽定义: 'renderType: slot(表格里如需展开项，slot可以改为expand)',
-        插槽写法: '<template #propName>xxxxxxx</template>'
-      }
-      const slot2 = {
-        插槽定义: 'renderType: slot(表格里如需展开项，slot可以改为expand)',
-        插槽写法: 'comProps.slots: { default: () => <div>xxxxxxx</div> }'
-      }
-      console.warn('请按如下方式设置插槽项，若同时设置template和jsx，以jsx方式为准')
-      console.table([slot1, slot2])
-      return renderJsxSlot(comSlots, scope)
-    }
-    if (slotTypeList.includes(renderType) && !comSlotsLength) {
-      return renderTemplateSlot(configItem, slots, scope)
-    }
-    if (!slotTypeList.includes(renderType) && comSlotsLength) {
-      return renderJsxSlot(comSlots, scope)
-    }
-    return null
+    return comSlotsLength
+      ? renderJsxSlot(comSlots, scope)
+      : slotTypeList.includes(renderType)
+      ? renderTemplateSlot(configItem, slots, scope)
+      : null
   }
 
   /**
