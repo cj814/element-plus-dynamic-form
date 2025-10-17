@@ -1,68 +1,65 @@
-import { computed, defineComponent, h, ref, resolveComponent } from "vue";
-import { ElForm, Column, ElTable, FormItemRule } from "element-plus";
-import { useComponent } from "../../hooks/useComponent";
-import { useForm } from "../../hooks/useForm";
-import { useTable } from "../../hooks/useTable";
+import { computed, defineComponent, h, ref, resolveComponent } from 'vue'
+import { ElForm, Column, ElTable, FormItemRule } from 'element-plus'
+import { useComponent } from '../../hooks/useComponent'
+import { useForm } from '../../hooks/useForm'
+import { useTable } from '../../hooks/useTable'
 
 export default defineComponent({
   props: {
     tableColumns: {
       type: Array<Column>,
-      default: () => [],
+      default: () => []
     },
     tableData: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     total: {
       type: Number,
-      default: 0,
+      default: 0
     },
     isForm: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   setup(props, { emit, slots, attrs, expose }) {
-    const formRef = ref<InstanceType<typeof ElForm>>();
-    const tableRef = ref<InstanceType<typeof ElTable>>();
-    const { getDynamicComponent, getSlotsComponent } = useComponent();
-    const isFormTable = computed(() => props.isForm);
-    const formData = computed(() => ({ tableData: props.tableData }));
-    const tableData = computed(() => props.tableData);
-    const allTableColumns = computed(() => props.tableColumns);
+    const formRef = ref<InstanceType<typeof ElForm>>()
+    const tableRef = ref<InstanceType<typeof ElTable>>()
+    const { getDynamicComponent, getSlotsComponent } = useComponent()
+    const isFormTable = computed(() => props.isForm)
+    const formData = computed(() => ({ tableData: props.tableData }))
+    const tableData = computed(() => props.tableData)
+    const allTableColumns = computed(() => props.tableColumns)
     const tableColumns = computed(() => {
       return allTableColumns.value.filter((columnItem: Column) => {
-        return columnItem.visible || !Object.prototype.hasOwnProperty.call(columnItem, "visible");
-      });
-    });
-    const pageNum = ref(1);
-    const pageSize = ref(10);
-    const showPagination = computed(() => props.total && !isFormTable.value);
+        return columnItem.visible || !Object.prototype.hasOwnProperty.call(columnItem, 'visible')
+      })
+    })
+    const pageNum = ref(1)
+    const pageSize = ref(10)
+    const showPagination = computed(() => props.total && !isFormTable.value)
 
     /**计算每列是否必填 */
     const columnRequiredMap = computed(() => {
-      const map = new Map();
+      const map = new Map()
       tableColumns.value.forEach((columnItem: Column) => {
-        const rules = columnItem.itemProps?.rules || [];
-        const isRequired = rules.some((rule: FormItemRule) => rule.required);
-        map.set(columnItem.prop, isRequired || false);
-      });
-      return map;
-    });
+        const rules = columnItem.itemProps?.rules || []
+        const isRequired = rules.some((rule: FormItemRule) => rule.required)
+        map.set(columnItem.prop, isRequired || false)
+      })
+      return map
+    })
 
     /**
      * 分页切换
      * @param pagination 分页参数
      */
-    const handlePagination = (pagination: {
-      pageNum: number;
-      pageSize: number;
-    }) => {
-      pageNum.value = pagination.pageNum;
-      pageSize.value = pagination.pageSize;
-      emit("pagination", pagination);
-    };
+    const handlePagination = (pagination: { pageNum: number; pageSize: number }) => {
+      pageNum.value = pagination.pageNum
+      pageSize.value = pagination.pageSize
+      emit('pagination', pagination)
+    }
 
     /**
      * 渲染表头
@@ -71,17 +68,14 @@ export default defineComponent({
      */
     const renderHeaderSlot = (columnItem: Column) => {
       if (isFormTable.value) {
-        const isRequired = columnRequiredMap.value.get(columnItem.prop);
-        const requiredClass = "text-red relative top-[2px] mr-[2px]";
+        const isRequired = columnRequiredMap.value.get(columnItem.prop)
+        const requiredClass = 'text-red relative top-[2px] mr-[2px]'
         if (isRequired) {
-          return h("span", null, [
-            h("span", { class: requiredClass }, "*"),
-            h("span", null, columnItem.label),
-          ]);
+          return h('span', null, [h('span', { class: requiredClass }, '*'), h('span', null, columnItem.label)])
         }
       }
-      return columnItem.label;
-    };
+      return columnItem.label
+    }
 
     /**
      * 渲染表体
@@ -90,48 +84,40 @@ export default defineComponent({
      * @returns 表体内容
      */
     const renderDefaultSlot = (columnItem: Column, scope: any) => {
-      const columnValue = scope.row[columnItem.prop as string] || "";
+      const columnValue = scope.row[columnItem.prop as string] || ''
       try {
         const updateFunc = (columnItem: Column, value: any) => {
-          scope.row[columnItem.prop as string] = value;
-        };
-        const renderType = columnItem.renderType;
-        const specialRenderTypes = ["index", "selection", "expand", "slot"];
+          scope.row[columnItem.prop as string] = value
+        }
+        const renderType = columnItem.renderType
+        const specialRenderTypes = ['index', 'selection', 'expand', 'slot']
         const specialRenderMap = {
           index: () => renderIndex(scope.$index),
           selection: () => renderSelection(),
           expand: () => renderSlot(columnItem, scope),
-          slot: () => renderSlot(columnItem, scope),
-        };
-        if (specialRenderTypes.includes(renderType)) {
-          return specialRenderMap[
-            renderType as keyof typeof specialRenderMap
-          ]();
+          slot: () => renderSlot(columnItem, scope)
         }
-        const dynamicComponent = getDynamicComponent(
-          isFormTable.value,
-          columnItem,
-          columnValue,
-          updateFunc,
-          scope
-        );
-        const curProp = `tableData.${scope.$index}.${columnItem.prop}`;
+        if (specialRenderTypes.includes(renderType)) {
+          return specialRenderMap[renderType as keyof typeof specialRenderMap]()
+        }
+        const dynamicComponent = getDynamicComponent(isFormTable.value, columnItem, columnValue, updateFunc, scope)
+        const curProp = `tableData.${scope.$index}.${columnItem.prop}`
         if (isFormTable.value) {
           return h(
-            resolveComponent("el-form-item"),
+            resolveComponent('el-form-item'),
             {
               ...columnItem.itemProps,
-              prop: curProp,
+              prop: curProp
             },
             () => dynamicComponent
-          );
+          )
         } else {
-          return dynamicComponent;
+          return dynamicComponent
         }
       } catch (err) {
-        return columnValue;
+        return columnValue
       }
-    };
+    }
 
     /**
      * 渲染索引列
@@ -139,16 +125,16 @@ export default defineComponent({
      * @returns 索引值
      */
     const renderIndex = (index: number) => {
-      return (pageNum.value - 1) * pageSize.value + index + 1;
-    };
+      return (pageNum.value - 1) * pageSize.value + index + 1
+    }
 
     /**
      * 渲染选择列
      * @returns 选择列内容
      */
     const renderSelection = () => {
-      return null;
-    };
+      return null
+    }
 
     /**
      * 渲染插槽
@@ -157,8 +143,8 @@ export default defineComponent({
      * @returns 插槽内容
      */
     const renderSlot = (columnItem: Column, scope: any) => {
-      return getSlotsComponent(columnItem, slots, scope);
-    };
+      return getSlotsComponent(columnItem, slots, scope)
+    }
 
     /**
      * 渲染表格列
@@ -168,32 +154,26 @@ export default defineComponent({
      * @returns 表格列内容
      */
     const renderTableColumn = (columnItem: any, columnAttr: Column | Record<string, any>, scp?: any) => {
-      const renderType = columnItem.renderType || undefined;
+      const renderType = columnItem.renderType || undefined
       const columnSlot: any = renderType
         ? {
             header: () => {
-              return renderHeaderSlot(columnItem);
+              return renderHeaderSlot(columnItem)
             },
             default: (scope: any) => {
-              return renderDefaultSlot(columnItem, scope);
-            },
+              return renderDefaultSlot(columnItem, scope)
+            }
           }
-        : null;
+        : null
       if (columnItem.children && Array.isArray(columnItem.children)) {
-        return h(
-          resolveComponent("el-table-column"),
-          { ...columnAttr },
-          columnItem.children.map((child: Column) =>
-            renderTableColumn(child, child, scp)
-          )
-        );
+        const newColumnAttr = { ...columnAttr }
+        delete newColumnAttr.children
+        return h(resolveComponent('el-table-column'), newColumnAttr, () =>
+          columnItem.children.map((child: Column) => renderTableColumn(child, child, scp))
+        )
       }
-      return h(
-        resolveComponent("el-table-column"),
-        { ...columnAttr },
-        columnSlot
-      );
-    };
+      return h(resolveComponent('el-table-column'), { ...columnAttr }, columnSlot)
+    }
 
     /**
      * 渲染基础表格
@@ -201,62 +181,58 @@ export default defineComponent({
      */
     const renderTable = () => {
       const tableColumnsArr = tableColumns.value.map((columnItem: Column) => {
-        const renderType = columnItem.renderType;
-        const basicAttr = { key: columnItem.prop, ...columnItem };
-        const selectionAttr = { type: "selection" };
-        const expandAttr = { type: "expand" };
+        const renderType = columnItem.renderType
+        const basicAttr = { key: columnItem.prop, ...columnItem }
+        const selectionAttr = { type: 'selection' }
+        const expandAttr = { type: 'expand' }
         const renderAttr = {
           ...basicAttr,
-          ...(renderType === "selection" ? selectionAttr : {}),
-          ...(renderType === "expand" ? expandAttr : {}),
-        };
-        const columnAttr = renderType ? renderAttr : basicAttr;
-        return renderTableColumn(columnItem, columnAttr);
-      });
-      const tableSlots: Record<string, any> = {
-        default: () => tableColumnsArr,
-      };
-      Object.keys(slots).forEach((slotName) => {
-        if (slotName !== "default") {
-          tableSlots[slotName] = (slotProps?: Record<string, any>) =>
-            slots[slotName]?.(slotProps);
+          ...(renderType === 'selection' ? selectionAttr : {}),
+          ...(renderType === 'expand' ? expandAttr : {})
         }
-      });
+        const columnAttr = renderType ? renderAttr : basicAttr
+        return renderTableColumn(columnItem, columnAttr)
+      })
+      const tableSlots: Record<string, any> = {
+        default: () => tableColumnsArr
+      }
+      Object.keys(slots).forEach((slotName) => {
+        if (slotName !== 'default') {
+          tableSlots[slotName] = (slotProps?: Record<string, any>) => slots[slotName]?.(slotProps)
+        }
+      })
       return h(
-        resolveComponent("el-table"),
+        resolveComponent('el-table'),
         {
           ...attrs,
           data: isFormTable.value ? formData.value.tableData : tableData.value,
-          ref: tableRef,
+          ref: tableRef
         },
         tableSlots
-      );
-    };
+      )
+    }
 
     /**
      * 渲染分页
      * @returns 分页内容
      */
     const renderPagination = () => {
-      if (!showPagination.value) return null;
-      return h(
-        resolveComponent("pagination"),
-        {
-          total: props.total,
-          pageNum: pageNum.value,
-          pageSize: pageSize.value,
-          onPagination: handlePagination,
-        }
-      );
-    };
-    
+      if (!showPagination.value) return null
+      return h(resolveComponent('pagination'), {
+        total: props.total,
+        pageNum: pageNum.value,
+        pageSize: pageSize.value,
+        onPagination: handlePagination
+      })
+    }
+
     /*
      * 渲染数据表格【适用于展示类的表格】
      * @returns 数据表格内容
      */
     const renderDataTable = () => {
-      return h("div", null, [renderTable(), renderPagination()]);
-    };
+      return h('div', null, [renderTable(), renderPagination()])
+    }
 
     /**
      * 渲染表单表格【适用于表单提交类的表格】
@@ -264,20 +240,20 @@ export default defineComponent({
      */
     const renderFormTable = () => {
       return h(
-        resolveComponent("el-form"),
+        resolveComponent('el-form'),
         {
           model: formData.value,
-          ref: formRef,
+          ref: formRef
         },
         renderTable
-      );
-    };
+      )
+    }
 
     expose({
       ...useForm(formRef),
-      ...useTable(tableRef),
-    });
+      ...useTable(tableRef)
+    })
 
-    return () => (isFormTable.value ? renderFormTable() : renderDataTable());
-  },
-});
+    return () => (isFormTable.value ? renderFormTable() : renderDataTable())
+  }
+})

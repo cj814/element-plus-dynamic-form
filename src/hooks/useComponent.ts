@@ -1,4 +1,4 @@
-import { h, resolveComponent } from "vue";
+import { h, resolveComponent } from 'vue'
 
 export function useComponent() {
   /**
@@ -16,15 +16,14 @@ export function useComponent() {
     updateFunc: (configItem: any, value: any) => void,
     scope?: any
   ) => {
-    const allEvents = configItem.comEvents || {};
-    const componentMode = isForm ? "hasForm" : "noForm";
+    const allEvents = configItem.comEvents || {}
+    const componentMode = isForm ? 'hasForm' : 'noForm'
     const dynamicRenderMap = {
       noForm: () => getNoFormComponent(configItem, configValue, scope),
-      hasForm: () =>
-        getFormComponent(configItem, configValue, allEvents, updateFunc, scope),
-    };
-    return dynamicRenderMap[componentMode as keyof typeof dynamicRenderMap]();
-  };
+      hasForm: () => getFormComponent(configItem, configValue, allEvents, updateFunc)
+    }
+    return dynamicRenderMap[componentMode as keyof typeof dynamicRenderMap]()
+  }
 
   /**
    * 获取动态组件【无form模式】
@@ -32,18 +31,14 @@ export function useComponent() {
    * @param configValue 组件值
    * @returns 组件
    */
-  const getNoFormComponent = (
-    configItem: any,
-    configValue: any,
-    scope?: any
-  ) => {
+  const getNoFormComponent = (configItem: any, configValue: any, scope?: any) => {
     try {
-      const formatter = configItem.comProps?.formatter || null;
-      return formatter ? formatter(configItem, scope) : configValue;
+      const formatter = configItem.comProps?.formatter || null
+      return formatter ? formatter(configItem, scope) : configValue
     } catch (err) {
-      return configValue;
+      return configValue
     }
-  };
+  }
 
   /**
    * 获取动态组件【有form模式】
@@ -56,25 +51,24 @@ export function useComponent() {
     configItem: any,
     configValue: any,
     allEvents: Record<string, (val: any) => void>,
-    updateFunc: (configItem: any, value: any) => void,
-    scope?: any
+    updateFunc: (configItem: any, value: any) => void
   ) => {
-    const modelName = configItem.comProps?.modelName || "modelValue";
+    const modelName = configItem.comProps?.modelName || 'modelValue'
     return h(
       resolveComponent(configItem.renderType),
       {
         [modelName]: configValue,
         [`onUpdate:${modelName}`]: (value: any) => {
-          updateFunc(configItem, value);
+          updateFunc(configItem, value)
         },
         ...configItem.comProps,
-        ...allEvents,
+        ...allEvents
       },
       {
-        ...renderHFuncSlot(configItem),
+        ...renderHFuncSlot(configItem)
       }
-    );
-  };
+    )
+  }
 
   /**
    * 获取组件插槽
@@ -84,33 +78,31 @@ export function useComponent() {
    * @returns 插槽
    */
   const getSlotsComponent = (configItem: any, slots?: any, scope?: any) => {
-    const renderType = configItem.renderType;
-    const comSlots = configItem.comProps?.slots || {};
-    const comSlotsLength = Object.keys(comSlots).length;
-    const slotTypeList = comSlotsLength ? ["slot"] : ["slot", "expand"];
+    const renderType = configItem.renderType
+    const comSlots = configItem.comProps?.slots || {}
+    const comSlotsLength = Object.keys(comSlots).length
+    const slotTypeList = comSlotsLength ? ['slot'] : ['slot', 'expand']
     if (slotTypeList.includes(renderType) && comSlotsLength) {
       const slot1 = {
-        插槽定义: "renderType: slot(表格里如需展开项，slot可以改为expand)",
-        插槽写法: "<template #propName>xxxxxxx</template>",
-      };
+        插槽定义: 'renderType: slot(表格里如需展开项，slot可以改为expand)',
+        插槽写法: '<template #propName>xxxxxxx</template>'
+      }
       const slot2 = {
-        插槽定义: "renderType: slot(表格里如需展开项，slot可以改为expand)",
-        插槽写法: "comProps.slots: { default: () => <div>xxxxxxx</div> }",
-      };
-      console.warn(
-        "请按如下方式设置插槽项，若同时设置template和jsx，以jsx方式为准"
-      );
-      console.table([slot1, slot2]);
-      return renderJsxSlot(comSlots, scope);
+        插槽定义: 'renderType: slot(表格里如需展开项，slot可以改为expand)',
+        插槽写法: 'comProps.slots: { default: () => <div>xxxxxxx</div> }'
+      }
+      console.warn('请按如下方式设置插槽项，若同时设置template和jsx，以jsx方式为准')
+      console.table([slot1, slot2])
+      return renderJsxSlot(comSlots, scope)
     }
     if (slotTypeList.includes(renderType) && !comSlotsLength) {
-      return renderTemplateSlot(configItem, slots, scope);
+      return renderTemplateSlot(configItem, slots, scope)
     }
     if (!slotTypeList.includes(renderType) && comSlotsLength) {
-      return renderJsxSlot(comSlots, scope);
+      return renderJsxSlot(comSlots, scope)
     }
-    return null;
-  };
+    return null
+  }
 
   /**
    * 渲染模板插槽
@@ -120,9 +112,9 @@ export function useComponent() {
    * @returns 插槽内容
    */
   const renderTemplateSlot = (configItem: any, slots?: any, scope?: any) => {
-    const slotName = configItem.prop;
-    return slotName && slots?.[slotName] ? slots[slotName]?.(scope) : null;
-  };
+    const slotName = configItem.prop
+    return slotName && slots?.[slotName] ? slots[slotName]?.(scope) : null
+  }
 
   /**
    * 渲染jsx插槽
@@ -130,8 +122,8 @@ export function useComponent() {
    * @returns 插槽内容
    */
   const renderJsxSlot = (comSlots: any, scope?: any) => {
-    return Object.keys(comSlots).map((slot) => comSlots[slot]?.(scope));
-  };
+    return Object.keys(comSlots).map((slot) => comSlots[slot]?.(scope))
+  }
 
   /**
    * 渲染h函数插槽
@@ -139,16 +131,16 @@ export function useComponent() {
    * @returns 插槽内容
    */
   const renderHFuncSlot = (configItem: any) => {
-    const slots = Object.keys(configItem.comProps?.slots || {});
+    const slots = Object.keys(configItem.comProps?.slots || {})
     const slotProps = slots.reduce((acc: any, slot) => {
-      acc[slot] = configItem.comProps.slots[slot];
-      return acc;
-    }, {});
-    return slotProps;
-  };
+      acc[slot] = configItem.comProps.slots[slot]
+      return acc
+    }, {})
+    return slotProps
+  }
 
   return {
     getDynamicComponent,
-    getSlotsComponent,
-  };
+    getSlotsComponent
+  }
 }
