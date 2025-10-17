@@ -1,86 +1,65 @@
-import { defineComponent, ref, watch, computed } from "vue";
-import { ElForm, ElFormItem, ElRow, ElCol } from "element-plus";
-import { useComponent } from "../../hooks/useComponent";
-import { useForm } from "../../hooks/useForm";
+import { defineComponent, ref, watch, computed } from 'vue'
+import { ElForm, ElFormItem, ElRow, ElCol } from 'element-plus'
+import { useComponent } from '../../hooks/useComponent'
+import { useForm } from '../../hooks/useForm'
 
 export default defineComponent({
-  name: "FormRender",
+  name: 'FormRender',
   props: {
     // 表单配置项
     formItems: {
       type: Array as () => Array<Record<string, any>>,
-      default: () => [],
+      default: () => []
     },
     // 表单数据
     formData: {
       type: Object as () => Object,
-      default: () => {},
+      default: () => {}
     },
     // 基础列宽度
     baseColSpan: {
       type: Number,
-      default: 8,
-    },
+      default: 24
+    }
   },
   setup(props, { attrs, slots, expose }) {
-    const formRef = ref<InstanceType<typeof ElForm>>();
-    const { getDynamicComponent } = useComponent();
-    const allFormItems = ref(props.formItems);
+    const formRef = ref<InstanceType<typeof ElForm>>()
+    const { getDynamicComponent } = useComponent()
+    const allFormItems = ref(props.formItems)
     const visibleFormItems = computed(() => {
-      return allFormItems.value.filter(
-        (formItem) => formItem.visible !== false
-      );
-    });
-    const formData = ref(props.formData);
+      return allFormItems.value.filter((formItem) => formItem.visible !== false)
+    })
+    const formData = ref(props.formData)
 
     watch(
       () => [props.formData, props.formItems],
       ([newForm, newItems]) => {
-        formData.value = newForm;
-        allFormItems.value = newItems as Array<Record<string, any>>;
+        formData.value = newForm
+        allFormItems.value = newItems as Array<Record<string, any>>
       },
       { deep: true }
-    );
+    )
 
     expose({
-      ...useForm(formRef),
-    });
+      ...useForm(formRef)
+    })
 
     return () => (
-      <ElForm
-        ref={formRef}
-        model={formData.value}
-        inline={true}
-        labelPosition="top"
-        {...attrs}
-      >
+      <ElForm ref={formRef} model={formData.value} inline={true} labelPosition="top" {...attrs}>
         <ElRow gutter={16} class="w-full flex flex-wrap">
           {visibleFormItems.value.map((item, index) => (
-            <ElCol
-              key={index}
-              span={item.colProps?.span || props.baseColSpan || 8}
-              {...(item.colProps || {})}
-            >
+            <ElCol key={index} span={item.colProps?.span || props.baseColSpan} {...(item.colProps || {})}>
               <ElFormItem {...(item.itemProps || {})}>
                 {(() => {
-                  if (item.renderType === "slot") {
-                    return slots[item.itemProps?.prop]?.();
+                  if (item.renderType === 'slot') {
+                    return slots[item.itemProps?.prop]?.()
                   } else {
-                    const formItemValue = (
-                      formData.value as Record<string, any>
-                    )[item.itemProps?.prop];
+                    const formItemValue = (formData.value as Record<string, any>)[item.itemProps?.prop]
                     const updateFunc = (configItem: any, value: any) => {
-                      (formData.value as Record<string, any>)[
-                        configItem.itemProps?.prop
-                      ] = value;
-                    };
-                    return () =>
-                      getDynamicComponent(
-                        true,
-                        item,
-                        formItemValue,
-                        updateFunc
-                      );
+                      // eslint-disable-next-line no-extra-semi
+                      ;(formData.value as Record<string, any>)[configItem.itemProps?.prop] = value
+                    }
+                    return () => getDynamicComponent(true, item, formItemValue, updateFunc)
                   }
                 })()}
               </ElFormItem>
@@ -88,6 +67,6 @@ export default defineComponent({
           ))}
         </ElRow>
       </ElForm>
-    );
-  },
-});
+    )
+  }
+})
