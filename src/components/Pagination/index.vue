@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-  <div style="height: 64px; padding: 16px 0; margin: 0; position: relative; display: flex; justify-content: end">
+  <div style="padding-top: 16px; display: flex; justify-content: end">
     <el-pagination
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
