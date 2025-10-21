@@ -3,8 +3,12 @@ import { ElForm, Column, ElTable, FormItemRule } from 'element-plus'
 import { useComponent } from '../../hooks/useComponent'
 import { useForm } from '../../hooks/useForm'
 import { useTable } from '../../hooks/useTable'
+import Pagination from '../Pagination/index.vue'
 
 export default defineComponent({
+  components: {
+    Pagination
+  },
   props: {
     tableColumns: {
       type: Array<Column>,
