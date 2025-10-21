@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-mutating-props -->
 <template>
-  <div :class="{ hidden: hidden }" class="pagination-container">
+  <div style="height: 64px; padding: 16px 0; margin: 0; position: relative; display: flex; justify-content: end">
     <el-pagination
       v-model:current-page="currentPage"
       v-model:page-size="pageSize"
@@ -99,15 +99,3 @@ export default defineComponent({
   }
 })
 </script>
-
-<style scoped>
-.pagination-container {
-  height: 64px;
-  padding: 16px 0;
-  margin: 0;
-  position: relative;
-}
-.pagination-container.hidden {
-  display: none;
-}
-</style>
