@@ -77,13 +77,13 @@ export default defineComponent({
       handleCurrentChange
     })
 
-    return h(
-      'div',
-      {
-        className: 'pagination-container',
-        style: { paddingTop: '16px', display: 'flex', justifyContent: 'flex-end' }
-      },
-      () =>
+    return () =>
+      h(
+        'div',
+        {
+          className: 'pagination-container',
+          style: { paddingTop: '16px', display: 'flex', justifyContent: 'flex-end' }
+        },
         h(resolveComponent('el-pagination'), {
           currentPage: currentPage.value,
           pageSize: pageSize.value,
@@ -94,6 +94,6 @@ export default defineComponent({
           onSizeChange: handleSizeChange,
           onCurrentChange: handleCurrentChange
         })
-    )
+      )
   }
 })
