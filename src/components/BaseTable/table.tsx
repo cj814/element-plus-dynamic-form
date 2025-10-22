@@ -26,6 +26,10 @@ export default defineComponent({
       type: Number,
       default: 10
     },
+    pageSizes: {
+      type: Array<number>,
+      default: () => [10, 20, 50, 100, 500]
+    },
     total: {
       type: Number,
       default: 0
@@ -239,6 +243,7 @@ export default defineComponent({
         total: props.total,
         pageNum: pageNum.value,
         pageSize: pageSize.value,
+        pageSizes: props.pageSizes,
         onPagination: handlePagination
       })
     }
