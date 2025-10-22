@@ -3,7 +3,7 @@ import { ElForm, Column, ElTable, FormItemRule } from 'element-plus'
 import { useComponent } from '../../hooks/useComponent'
 import { useForm } from '../../hooks/useForm'
 import { useTable } from '../../hooks/useTable'
-import Pagination from '../Pagination/index.vue'
+import Pagination from '../Pagination/index'
 
 export default defineComponent({
   components: {
@@ -17,6 +17,14 @@ export default defineComponent({
     tableData: {
       type: Array,
       default: () => []
+    },
+    pageNum: {
+      type: Number,
+      default: 1
+    },
+    pageSize: {
+      type: Number,
+      default: 10
     },
     total: {
       type: Number,
@@ -40,8 +48,8 @@ export default defineComponent({
         return columnItem.visible || !Object.prototype.hasOwnProperty.call(columnItem, 'visible')
       })
     })
-    const pageNum = ref(1)
-    const pageSize = ref(10)
+    const pageNum = ref(props.pageNum)
+    const pageSize = ref(props.pageSize)
     const showPagination = computed(() => props.total && !isFormTable.value)
 
     /**计算每列是否必填 */

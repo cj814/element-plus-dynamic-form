@@ -1,22 +1,5 @@
-<!-- eslint-disable vue/no-mutating-props -->
-<template>
-  <div style="padding-top: 16px; display: flex; justify-content: end">
-    <el-pagination
-      v-model:current-page="currentPage"
-      v-model:page-size="pageSize"
-      :background="background"
-      :layout="layout"
-      :page-sizes="pageSizes"
-      :total="total"
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
-  </div>
-</template>
-
-<script>
+import { defineComponent, computed, h, resolveComponent } from 'vue'
 import { scrollTo } from '../../utils/scrollTo'
-import { defineComponent, computed } from 'vue'
 
 export default defineComponent({
   name: 'Pagination',
@@ -56,7 +39,7 @@ export default defineComponent({
       default: false
     }
   },
-  setup(props, { emit }) {
+  setup(props, { emit, expose }) {
     const currentPage = computed({
       get() {
         return props.pageNum
@@ -73,7 +56,7 @@ export default defineComponent({
         emit('update-pageSize', val)
       }
     })
-    const handleSizeChange = (val) => {
+    const handleSizeChange = (val: number) => {
       if (currentPage.value * val > props.total) {
         currentPage.value = 1
       }
@@ -82,20 +65,35 @@ export default defineComponent({
         scrollTo(0, 800)
       }
     }
-    const handleCurrentChange = (val) => {
+    const handleCurrentChange = (val: number) => {
       emit('pagination', { pageNum: val, pageSize: pageSize.value })
       if (props.autoScroll) {
         scrollTo(0, 800)
       }
     }
 
-    return {
-      currentPage,
-      // eslint-disable-next-line vue/no-dupe-keys
-      pageSize,
+    expose({
       handleSizeChange,
       handleCurrentChange
-    }
+    })
+
+    return h(
+      'div',
+      {
+        className: 'pagination-container',
+        style: { paddingTop: '16px', display: 'flex', justifyContent: 'flex-end' }
+      },
+      () =>
+        h(resolveComponent('el-pagination'), {
+          currentPage: currentPage.value,
+          pageSize: pageSize.value,
+          background: props.background,
+          layout: props.layout,
+          pageSizes: props.pageSizes as number[],
+          total: props.total,
+          onSizeChange: handleSizeChange,
+          onCurrentChange: handleCurrentChange
+        })
+    )
   }
 })
-</script>
