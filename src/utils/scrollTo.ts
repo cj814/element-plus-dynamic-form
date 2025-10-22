@@ -10,6 +10,9 @@
 
 // requestAnimationFrame for Smart Animating http://goo.gl/sx5sts
 const requestAnimFrame = (function () {
+  if (typeof window === 'undefined') {
+    return () => {}
+  }
   return (
     window.requestAnimationFrame ||
     function (callback) {
