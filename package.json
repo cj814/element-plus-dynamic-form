@@ -1,6 +1,6 @@
 {
   "name": "element-plus-dynamic-form",
-  "version": "1.0.0",
+  "version": "1.0.14",
   "description": "基于 Element Plus 的动态表单组件库",
   "main": "dist/index.umd.js",
   "module": "dist/index.esm.js",
